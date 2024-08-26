@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { IoAddCircleSharp } from "react-icons/io5";
+import { toDoItemStore } from "../store/todoItemStore";
 
-const Add_to_do = ({ onNewItem }) => {
+const Add_to_do = () => {
+  const { handleNewItem } = useContext(toDoItemStore);
   const [todoName, setTodoName] = useState("");
   const [todoDate, setTodoDate] = useState("");
 
@@ -14,7 +16,7 @@ const Add_to_do = ({ onNewItem }) => {
   };
 
   const handleOnClick = () => {
-    onNewItem(todoName, todoDate);
+    handleNewItem(todoName, todoDate);
     setTodoName("");
     setTodoDate("");
   };

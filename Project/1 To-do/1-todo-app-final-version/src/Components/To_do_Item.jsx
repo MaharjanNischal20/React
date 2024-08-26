@@ -1,6 +1,9 @@
+import { useContext } from "react";
 import { FaDeleteLeft } from "react-icons/fa6";
+import { toDoItemStore } from "../store/todoItemStore";
 
 const ToDoItem = ({ todoName, todoDate, onDeleteClick }) => {
+  const {} = useContext(toDoItemStore);
   return (
     <div className="container">
       <div className="row item-row">
