@@ -29,3 +29,13 @@
   margin-left: 10%;
   margin-top: 50px;
 }
+
+.welcome-message {
+  margin: 100px 0;
+}
+
+.spinner-border {
+  display: block;
+  justify-content: center;
+  margin:200px 600px ;
+}

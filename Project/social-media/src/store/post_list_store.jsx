@@ -3,6 +3,7 @@ import { createContext, useReducer } from "react";
 export const PostList = createContext({
   postList: [],
   addPost: () => {},
+  addInitialPosts: () => {},
   deletePost: () => {},
 });
 
@@ -12,6 +13,8 @@ const PostListReducer = (currPostList, action) => {
     newPostList = currPostList.filter(
       (post) => post.id !== action.payload.postID
     );
+  } else if (action.type === "ADD_INITIAL_POSTS") {
+    newPostList = action.payload.posts;
   } else if (action.type === "ADD_POST") {
     newPostList = [action.payload, ...currPostList];
   }
@@ -19,10 +22,7 @@ const PostListReducer = (currPostList, action) => {
 };
 
 const PostListProvider = ({ children }) => {
-  const [postList, dispatchPostList] = useReducer(
-    PostListReducer,
-    DEFAULT_POST_LIST
-  );
+  const [postList, dispatchPostList] = useReducer(PostListReducer, []);
 
   const addPost = (userID, postTitle, postBody, reaction, tags) => {
     dispatchPostList({
@@ -30,7 +30,7 @@ const PostListProvider = ({ children }) => {
       payload: {
         id: Date.now(),
         title: postTitle,
-        content: postBody,
+        body: postBody,
         reaction: reaction,
         user: userID,
         tags: tags,
@@ -38,33 +38,20 @@ const PostListProvider = ({ children }) => {
     });
   };
 
+  const addInitialPosts = (posts) => {
+    dispatchPostList({ type: "ADD_INITIAL_POSTS", payload: { posts } });
+  };
+
   const deletePost = (postID) => {
     dispatchPostList({ type: "DELETE_POST", payload: { postID } });
   };
 
   return (
-    <PostList.Provider value={{ postList, addPost, deletePost }}>
+    <PostList.Provider
+      value={{ postList, addPost, deletePost, addInitialPosts }}
+    >
       {children}
     </PostList.Provider>
   );
 };
 export default PostListProvider;
-
-const DEFAULT_POST_LIST = [
-  {
-    id: "1",
-    title: "Post 1",
-    content: "This is post 1",
-    reaction: 2,
-    user: "user-7",
-    tags: ["loving", "aesthetic"],
-  },
-  {
-    id: "2",
-    title: "Post 2",
-    content: "This is post 2",
-    reaction: 5,
-    user: "user-9",
-    tags: ["loving", "aesthetic"],
-  },
-];
