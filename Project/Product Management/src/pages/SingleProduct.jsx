@@ -1,8 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 export default function SingleProduct() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [product, setProduct] = useState({});
+
+  const fetchProduct = async () => {
+    const response = await axios.get(
+      `https://66e287cb494df9a478e2069c.mockapi.io/products/${id}`
+    );
+    if (response.status === 200) {
+      setProduct(response.data);
+    }
+  };
+
+  const deleteHandler = async (productId) => {
+    const response = await axios.delete(
+      `https://66e287cb494df9a478e2069c.mockapi.io/products/${id}`
+    );
+    if (response.status === 200) {
+      navigate("/");
+    } else {
+      console.log("something went wrong");
+    }
+  };
+
+  useEffect(() => {
+    fetchProduct();
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -11,20 +40,22 @@ export default function SingleProduct() {
           <div className="flex flex-wrap -mx-4">
             <div className="w-full md:w-1/2 px-4 mb-8">
               <img
-                src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxfHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080"
+                src={product.productImage}
                 alt="Product"
                 className="w-full h-auto rounded-lg shadow-md mb-4"
                 id="mainImage"
               />
             </div>
             <div className="w-full md:w-1/2 px-4">
-              <h2 className="text-3xl font-bold mb-2">
-                Premium Wireless Headphones
+              <h2 className="text-3xl font-bold mb-2">{product.productName}</h2>
+              <h2 className="text-1xl font-bold mb-2">
+                {product.productCategory}
               </h2>
-              <p className="text-gray-600 mb-4">SKU: WH1000XM4</p>
+
               <div className="mb-4">
-                <span className="text-2xl font-bold mr-2">$349.99</span>
-                <span className="text-gray-500 line-through">$399.99</span>
+                <span className="text-2xl font-bold mr-2">
+                  ${product.productPrice}
+                </span>
               </div>
               <div className="flex items-center mb-4">
                 <svg
@@ -89,20 +120,7 @@ export default function SingleProduct() {
                 </svg>
                 <span className="ml-2 text-gray-600">4.5 (120 reviews)</span>
               </div>
-              <p className="text-gray-700 mb-6">
-                Experience premium sound quality and industry-leading noise
-                cancellation with these wireless headphones. Perfect for music
-                lovers and frequent travelers.
-              </p>
-
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Color:</h3>
-                <div className="flex space-x-2">
-                  <button className="w-8 h-8 bg-black rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"></button>
-                  <button className="w-8 h-8 bg-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"></button>
-                  <button className="w-8 h-8 bg-blue-500 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"></button>
-                </div>
-              </div>
+              <p className="text-gray-700 mb-6">{product.productDescription}</p>
 
               <div className="mb-6">
                 <label
@@ -122,16 +140,17 @@ export default function SingleProduct() {
               </div>
 
               <div className="flex space-x-4 mb-6">
-                <Link to="/edit">
+                <Link to={`/edit/${id}`}>
                   <button className="bg-indigo-600 flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Edit
                   </button>
                 </Link>
-                <Link to="/delete">
-                  <button className="bg-red-600 flex gap-2 items-center  text-gray-100 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 ">
-                    Delete
-                  </button>
-                </Link>
+                <button
+                  onClick={() => deleteHandler(product.productID)}
+                  className="bg-red-600 flex gap-2 items-center  text-gray-100 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 "
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </div>

@@ -11,8 +11,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />}></Route>
         <Route path="/create" element={<CreateProduct />}></Route>
-        <Route path="/edit" element={<EditProduct />}></Route>
-        <Route path="/single" element={<SingleProduct />}></Route>
+        <Route path="/edit/:id" element={<EditProduct />}></Route>
+        <Route path="/single/:id" element={<SingleProduct />}></Route>
       </Routes>
     </BrowserRouter>
   );

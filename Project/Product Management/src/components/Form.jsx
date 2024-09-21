@@ -1,21 +1,73 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Form({ type }) {
+export default function Form({ type, id }) {
+  const navigate = useNavigate();
+  const [data, setData] = useState({});
+  const fetchProduct = async () => {
+    const response = await axios.get(
+      `https://66e287cb494df9a478e2069c.mockapi.io/products/${id}`
+    );
+    setData(response.data);
+  };
+  useEffect(() => {
+    if (type === "Edit") {
+      fetchProduct();
+    }
+  }, []);
+
+  const changeHandler = (event) => {
+    const { name, value } = event.target;
+    setData({
+      ...data,
+      [name]: value,
+    });
+  };
+
+  const createProduct = async (e) => {
+    e.preventDefault();
+    if (type === "Create") {
+      const response = await axios.post(
+        "https://66e287cb494df9a478e2069c.mockapi.io/products",
+        data
+      );
+      if (response.status === 201) {
+        alert("Product created successfully");
+        navigate("/");
+      } else {
+        alert("Failed to create product");
+      }
+    } else {
+      const response = await axios.put(
+        `https://66e287cb494df9a478e2069c.mockapi.io/products/${id}`,
+        data
+      );
+      if (response.status === 200) {
+        navigate("/single/" + id);
+      } else {
+        alert("Something went wrong");
+      }
+    }
+  };
+
   return (
     <div>
-      <form className="max-w-md mx-auto mt-5">
+      <form className="max-w-md mx-auto mt-5" onSubmit={createProduct}>
         <h1 className="text-3xl font-bold">{type} Product</h1>
         <div className="relative z-0 w-full mb-5 group">
           <input
-            type="email"
-            name="floating_email"
-            id="floating_email"
+            type="text"
+            name="productName"
+            id="floating_name"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required
+            onChange={changeHandler}
+            value={data.productName}
           />
           <label
-            for="floating_email"
+            for="floating_name"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Product Name
@@ -23,102 +75,92 @@ export default function Form({ type }) {
         </div>
         <div className="relative z-0 w-full mb-5 group">
           <input
-            type="password"
-            name="floating_password"
-            id="floating_password"
+            type="text"
+            name="productCategory"
+            id="floating_category"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required
+            onChange={changeHandler}
+            value={data.productCategory}
           />
           <label
-            for="floating_password"
+            for="floating_category"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
-            Password
+            Category
           </label>
         </div>
         <div className="relative z-0 w-full mb-5 group">
           <input
-            type="password"
-            name="repeat_password"
-            id="floating_repeat_password"
+            type="text"
+            name="productBrand"
+            id="floating_brand"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required
+            onChange={changeHandler}
+            value={data.productBrand}
           />
           <label
-            for="floating_repeat_password"
+            for="floating_brand"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
-            Confirm password
+            Brand
+          </label>
+        </div>
+        <div className="relative z-0 w-full mb-5 group">
+          <textarea
+            name="productDescription"
+            id="floating_description"
+            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" "
+            required
+            onChange={changeHandler}
+            value={data.productDescription}
+          />
+          <label
+            for="floating_description"
+            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          >
+            Description
           </label>
         </div>
         <div className="grid md:grid-cols-2 md:gap-6">
           <div className="relative z-0 w-full mb-5 group">
             <input
-              type="text"
-              name="floating_first_name"
-              id="floating_first_name"
+              type="number"
+              name="productPrice"
+              id="floating_price"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
+              onChange={changeHandler}
+              value={data.productPrice}
             />
             <label
-              for="floating_first_name"
+              for="floating_price"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
-              First name
+              Price
             </label>
           </div>
           <div className="relative z-0 w-full mb-5 group">
             <input
-              type="text"
-              name="floating_last_name"
-              id="floating_last_name"
+              type="url"
+              name="productImage"
+              id="floating_image"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
+              onChange={changeHandler}
+              value={data.productImage}
             />
             <label
-              for="floating_last_name"
+              for="floating_image"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
-              Last name
-            </label>
-          </div>
-        </div>
-        <div className="grid md:grid-cols-2 md:gap-6">
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="tel"
-              pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-              name="floating_phone"
-              id="floating_phone"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              for="floating_phone"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Phone number (123-456-7890)
-            </label>
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="text"
-              name="floating_company"
-              id="floating_company"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              for="floating_company"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Company (Ex. Google)
+              Image
             </label>
           </div>
         </div>
